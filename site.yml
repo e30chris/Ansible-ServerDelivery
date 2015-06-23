@@ -1,0 +1,22 @@
+---
+  # Site.yml to manage the ServerDelivery Playbook.
+
+- hosts: all
+  remote_user: root
+
+
+  tasks:
+    - name: update all YUM packages to latest
+      yum:
+        name: *
+        state: latest
+        update_cache: yes
+      when: ansible_os_family == "CentOS "
+
+    - name: update all Apt packages to latest
+      apt:
+        name: *
+        state: latest
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+      
