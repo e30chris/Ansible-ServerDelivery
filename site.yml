@@ -4,19 +4,37 @@
 - hosts: all
   remote_user: root
 
-
   tasks:
     - name: update all YUM packages to latest
       yum:
-        name: *
+        name: "*"
         state: latest
         update_cache: yes
-      when: ansible_os_family == "CentOS "
+      when: ansible_os_family == "RedHat"
+
+      tags:
+        - redhat
+        - update
 
     - name: update all Apt packages to latest
       apt:
-        name: *
+        name: "*"
         state: latest
         update_cache: yes
       when: ansible_os_family == "Debian"
-      
+
+      tags:
+        - debian
+        - update
+
+    - name: adding users to servers
+      user:
+        name: chrisl
+        comment: "chrisl sudo account"
+        shell: /bin/bash
+        generate_ssh_key: yes
+        ssh_key_file: .ssh/id_rsa
+        ssh_key_bits: 4096
+        ssh_key_type: rsa
+        ssh_key_comment: "chrisl@{{ ansible_hostname }}"
+        ssh_key_passphrase: "{{ chrisl_ssh_key_pass }}"

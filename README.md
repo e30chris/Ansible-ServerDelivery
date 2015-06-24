@@ -23,6 +23,7 @@ Requirements
 Role Variables
 --------------
 
+chrisl_ssh_key_pass = password for the ssh key created on the delivered server
 
 
 Dependencies
