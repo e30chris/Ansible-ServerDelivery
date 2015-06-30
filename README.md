@@ -23,7 +23,8 @@ Requirements
 Role Variables
 --------------
 
-chrisl_ssh_key_pass = password for the ssh key created on the delivered server
+users_ssh_key_pass = password for the ssh key created on the delivered server
+delivered_users = users to create on the system that will have sudo
 
 
 Dependencies
