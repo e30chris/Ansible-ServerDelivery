@@ -44,25 +44,50 @@
         ssh_key_passphrase: "{{ users_ssh_key_pass }}"
       with_items: "{{ delivered_users }}"
 
+    - name: add users to sudo
+      template:
+        backup: yes
+        src: templates/redhat_sudoers.j2
+        dest: /etc/sudoers
+        owner: root
+        group: root
+        mode: 0600
+      when: ansible_os_family == "RedHat"
+
       tags:
         - users
 
     - name: secure SSH with a sane sshd_config on RedHat
       template:
         backup: yes
-        src: redhat_sshd_config.j2
+        src: templates/redhat_sshd_config.j2
         dest: /etc/ssh/sshd_config
         owner: root
         group: root
         mode: 0600
       when: ansible_os_family == "RedHat"
 
+      tags:
+        - sshd
+
     - name: secure SSH with a sane sshd_config on Debian
       template:
         backup: yes
-        src: debian_sshd_config.j2
+        src: templates/debian_sshd_config.j2
         dest: /etc/ssh/sshd_config
         owner: root
         group: root
         mode: 0600
       when: ansible_os_family == "Debian"
+
+      tags:
+        - sshd
+
+    - name: restart sshd with new config
+      service:
+        name: sshd
+        state: restarted
+        enabled: yes
+
+      tags:
+        - sshd
