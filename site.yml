@@ -9,26 +9,34 @@
 
 
   tasks:
-    - name: update all YUM packages to latest
+
+    - name: update all YUM packages to latest on Centos
       yum:
         name: "*"
         state: latest
         update_cache: yes
-      when: ansible_os_family == "RedHat"
+      when: ansible_distribution == "Centos"
 
       tags:
-        - redhat
         - update
 
-    - name: update all Apt packages to latest
+    - name: update all DNF packages to latest on Fedora
+      dnf:
+        name: "*"
+        state: latest
+      when: ansible_distribution == "Fedora"
+
+      tags:
+        - update
+
+    - name: update all Apt packages to latest on Debian
       apt:
         name: "*"
         state: latest
         update_cache: yes
-      when: ansible_os_family == "Debian"
+      when: ansible_distribution == "Debian"
 
       tags:
-        - debian
         - update
 
     - name: adding users to servers
@@ -44,15 +52,46 @@
         ssh_key_passphrase: "{{ users_ssh_key_pass }}"
       with_items: "{{ delivered_users }}"
 
-    - name: add users to sudo
+      tags:
+        - users
+
+    - name: add users ssh public keys
+      copy:
+        src: files/{{ item }}_id_rsa.pub
+        dest: /home/{{ item }}/.ssh/authorized_keys
+        owner: "{{ item }}"
+        group: "{{ item }}"
+        mode: 0600
+      with_items: "{{ delivered_users }}"
+
+      tags:
+        - users
+        - ssh
+
+    - name: add users to sudo on RedHats
       template:
-        backup: yes
+        backup: no
         src: templates/redhat_sudoers.j2
-        dest: /etc/sudoers
+        dest: /etc/sudoers.d/"{{ item }}"
         owner: root
         group: root
-        mode: 0600
+        mode: 0440
+      with_items: "{{ delivered_users }}"
       when: ansible_os_family == "RedHat"
+
+      tags:
+        - users
+
+    - name: add users to sudo on Debians
+      template:
+        backup: no
+        src: templates/debian_sudoers.j2
+        dest: /etc/sudoers.d/{{ item }}
+        owner: root
+        group: root
+        mode: 0440
+      with_items: "{{ delivered_users }}"
+      when: ansible_os_family == "Debian"
 
       tags:
         - users

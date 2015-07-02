@@ -4,14 +4,15 @@ Role Name
 Take a fresh deployed server from AWS or Digital Ocean and deliver it with everything it needs to be a secure, easy to use simple server.  Servers will be deployed via Tugboat for Digital Ocean and AWS will use Web or cli.
 
   - Goal:
-    - Apply all updates via YUM or Apt
-    - Apply sane security setup
+    - Apply all updates via YUM, DNF or Apt
+    - Apply sane security setup to sshd
     - Create a list of users
     - Each user should have:
       - SSH Keys loaded
       - Shell configured
       - Aliases ready
       - Sudo access
+      - SSH public keys in authorized_keys
 
 Requirements
 ------------
@@ -19,6 +20,7 @@ Requirements
   - Server is running
   - Server has a public facing IP
   - SSH is enabled
+  - Each user to be created has a public ssh key in files/
 
 Role Variables
 --------------
