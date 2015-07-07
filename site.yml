@@ -46,9 +46,16 @@
       tags:
         - update
 
+    - name: add admin group to servers for sudo rights
+      group:
+        name: admin
+        state: present
+
     - name: adding users to servers
       user:
         name: "{{ item }}"
+        group: "{{ item }}"
+        groups: admin
         comment: "{{ item }} sudo account"
         shell: /bin/bash
         generate_ssh_key: yes
@@ -76,9 +83,9 @@
         - ssh
 
     - name: add users to sudo on RedHats
-      template:
+      copy:
         backup: no
-        src: templates/redhat_sudoers.j2
+        src: files/redhat_sudoers
         dest: /etc/sudoers.d/{{ item }}
         owner: root
         group: root
@@ -90,9 +97,9 @@
         - users
 
     - name: add users to sudo on Debians
-      template:
+      copy:
         backup: no
-        src: templates/debian_sudoers.j2
+        src: files/debian_sudoers
         dest: /etc/sudoers.d/{{ item }}
         owner: root
         group: root
