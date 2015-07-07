@@ -1,0 +1,146 @@
+---
+  # Site.yml to manage the ServerDelivery Playbook.
+
+- hosts: all
+  remote_user: root
+  vars_files:
+    - group_vars/main.yml
+    - group_vars/passes.yml
+
+
+  tasks:
+
+    - name: update all YUM packages to latest on Centos
+      yum:
+        name: "*"
+        state: latest
+        update_cache: yes
+      when: ansible_distribution == "CentOS"
+
+      tags:
+        - update
+
+    - name: update all DNF packages to latest on Fedora
+      dnf:
+        name: "*"
+        state: latest
+      when: ansible_distribution == "Fedora"
+
+      tags:
+        - update
+
+    - name: update all Apt packages to latest on Debian
+      apt:
+        upgrade: dist
+        state: latest
+        update_cache: yes
+      when: ansible_distribution == "Debian"
+
+    - name: add sudoers package to Debian for new users
+      apt:
+        name: sudo
+        state: latest
+        update_cache: no
+      when: ansible_distribution == "Debian"
+
+      tags:
+        - update
+
+    - name: add admin group to servers for sudo rights
+      group:
+        name: admin
+        state: present
+
+    - name: adding users to servers
+      user:
+        name: "{{ item }}"
+        group: "{{ item }}"
+        groups: admin
+        comment: "{{ item }} sudo account"
+        shell: /bin/bash
+        generate_ssh_key: yes
+        ssh_key_file: .ssh/id_rsa
+        ssh_key_bits: 4096
+        ssh_key_type: rsa
+        ssh_key_comment: "{{ item }}@{{ ansible_hostname }}"
+        ssh_key_passphrase: "{{ users_ssh_key_pass }}"
+      with_items: "{{ delivered_users }}"
+
+      tags:
+        - users
+
+    - name: add users ssh public keys
+      copy:
+        src: files/{{ item }}_id_rsa.pub
+        dest: /home/{{ item }}/.ssh/authorized_keys
+        owner: "{{ item }}"
+        group: "{{ item }}"
+        mode: 0600
+      with_items: "{{ delivered_users }}"
+
+      tags:
+        - users
+        - ssh
+
+    - name: add users to sudo on RedHats
+      copy:
+        backup: no
+        src: files/redhat_sudoers
+        dest: /etc/sudoers.d/{{ item }}
+        owner: root
+        group: root
+        mode: 0440
+      with_items: "{{ delivered_users }}"
+      when: ansible_os_family == "RedHat"
+
+      tags:
+        - users
+
+    - name: add users to sudo on Debians
+      copy:
+        backup: no
+        src: files/debian_sudoers
+        dest: /etc/sudoers.d/{{ item }}
+        owner: root
+        group: root
+        mode: 0440
+      with_items: "{{ delivered_users }}"
+      when: ansible_os_family == "Debian"
+
+      tags:
+        - users
+
+    - name: secure SSH with a sane sshd_config on RedHat
+      template:
+        backup: yes
+        src: templates/redhat_sshd_config.j2
+        dest: /etc/ssh/sshd_config
+        owner: root
+        group: root
+        mode: 0600
+      when: ansible_os_family == "RedHat"
+
+      tags:
+        - sshd
+
+    - name: secure SSH with a sane sshd_config on Debian
+      template:
+        backup: yes
+        src: templates/debian_sshd_config.j2
+        dest: /etc/ssh/sshd_config
+        owner: root
+        group: root
+        mode: 0600
+      when: ansible_os_family == "Debian"
+
+      tags:
+        - sshd
+
+    - name: restart sshd with new config
+      service:
+        name: sshd
+        state: restarted
+        enabled: yes
+
+      tags:
+        - sshd
