@@ -15,7 +15,7 @@
         name: "*"
         state: latest
         update_cache: yes
-      when: ansible_distribution == "Centos"
+      when: ansible_distribution == "CentOS"
 
       tags:
         - update
