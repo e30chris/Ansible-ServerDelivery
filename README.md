@@ -17,7 +17,7 @@ Take a fresh deployed server from AWS or Digital Ocean and deliver it with every
 Requirements
 ------------
 
-  - Server is running
+  - Server is Debian or RedHat family
   - Server has a public facing IP
   - SSH is enabled
   - Each user to be created has a public ssh key in files/
@@ -33,15 +33,6 @@ Dependencies
 ------------
 
 
-
-Example Playbook
-----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
 
 License
 -------
