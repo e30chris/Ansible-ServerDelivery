@@ -31,9 +31,16 @@
 
     - name: update all Apt packages to latest on Debian
       apt:
-        name: "*"
+        upgrade: dist
         state: latest
         update_cache: yes
+      when: ansible_distribution == "Debian"
+
+    - name: add sudoers package to Debian for new users
+      apt:
+        name: sudo
+        state: latest
+        update_cache: no
       when: ansible_distribution == "Debian"
 
       tags:
@@ -72,7 +79,7 @@
       template:
         backup: no
         src: templates/redhat_sudoers.j2
-        dest: /etc/sudoers.d/"{{ item }}"
+        dest: /etc/sudoers.d/{{ item }}
         owner: root
         group: root
         mode: 0440
