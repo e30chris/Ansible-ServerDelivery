@@ -36,6 +36,9 @@
         update_cache: yes
       when: ansible_distribution == "Debian"
 
+      tags:
+        - update
+
     - name: add sudoers package to Debian for new users
       apt:
         name: sudo
@@ -80,6 +83,9 @@
         name: admin
         state: present
 
+      tags:
+        - sudo
+
     - name: add users to admin group
       user:
         name: "{{ item }}"
@@ -87,33 +93,22 @@
         append: yes
       with_items: "{{ delivered_users }}"
 
-    - name: add users sudoers file on RedHats
+      tags:
+        - sudo
+
+    - name: add users sudoers file
       copy:
         backup: no
-        src: files/redhat_sudoers
+        src: files/sudoers_file
         dest: /etc/sudoers.d/{{ item }}
         owner: root
         group: root
         mode: 0440
       with_items: "{{ delivered_users }}"
-      when: ansible_os_family == "RedHat"
 
       tags:
         - users
-
-    - name: add users sudoers file on Debians
-      copy:
-        backup: no
-        src: files/debian_sudoers
-        dest: /etc/sudoers.d/{{ item }}
-        owner: root
-        group: root
-        mode: 0440
-      with_items: "{{ delivered_users }}"
-      when: ansible_os_family == "Debian"
-
-      tags:
-        - users
+        - sudo
 
     - name: secure SSH with a sane sshd_config on RedHat
       template:
