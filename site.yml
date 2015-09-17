@@ -136,11 +136,21 @@
       tags:
         - sshd
 
-    - name: restart sshd with new config
+    - name: restart sshd on Redhat family
       service:
         name: sshd
         state: restarted
         enabled: yes
+      when: ansible_os_family == "Redhat"
+
+      tags: ssh
+
+    - name: restart sshd with new config
+      service:
+        name: ssh
+        state: restarted
+        enabled: yes
+      when: ansible_os_family == "Debian"
 
       tags:
         - sshd
