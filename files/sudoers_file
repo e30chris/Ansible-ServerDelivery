@@ -1,0 +1,3 @@
+# This file managed by Ansible any and all changes will be lost without notice!
+# sudoers.d file for each user added by Ansible.
+%admin ALL=(ALL:ALL) NOPASSWD:ALL
