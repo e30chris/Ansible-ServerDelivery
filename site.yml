@@ -6,48 +6,18 @@
   vars_files:
     - group_vars/main.yml
     - group_vars/passes.yml
-
+    - group_vars/{{ ansible_distribution }}.yml
 
   tasks:
 
-    - name: update all YUM packages to latest on Centos
-      yum:
-        name: "*"
-        state: latest
-        update_cache: yes
-      when: ansible_distribution == "CentOS"
+    - include: CentOS.yml
+      when: ansible_distribution == "Centos"
 
-      tags:
-        - update
+    - include: Ubuntu.yml
+      when: ansible_distribution == "Ubuntu"
 
-    - name: update all DNF packages to latest on Fedora
-      dnf:
-        name: "*"
-        state: latest
+    - include: Fedora.yml
       when: ansible_distribution == "Fedora"
-
-      tags:
-        - update
-
-    - name: update all Apt packages to latest on Debian
-      apt:
-        upgrade: dist
-        state: latest
-        update_cache: yes
-      when: ansible_distribution == "Debian"
-
-      tags:
-        - update
-
-    - name: add sudoers package to Debian for new users
-      apt:
-        name: sudo
-        state: latest
-        update_cache: no
-      when: ansible_distribution == "Debian"
-
-      tags:
-        - update
 
     - name: adding users to servers
       user:
@@ -62,9 +32,6 @@
         ssh_key_passphrase: "{{ users_ssh_key_pass }}"
       with_items: "{{ delivered_users }}"
 
-      tags:
-        - users
-
     - name: add users ssh public keys
       copy:
         src: files/{{ item }}_id_rsa.pub
@@ -74,17 +41,10 @@
         mode: 0600
       with_items: "{{ delivered_users }}"
 
-      tags:
-        - users
-        - ssh
-
     - name: add admin group
       group:
         name: admin
         state: present
-
-      tags:
-        - sudo
 
     - name: add users to admin group
       user:
@@ -92,9 +52,6 @@
         groups: admin
         append: yes
       with_items: "{{ delivered_users }}"
-
-      tags:
-        - sudo
 
     - name: add users sudoers file
       copy:
@@ -106,51 +63,17 @@
         mode: 0440
       with_items: "{{ delivered_users }}"
 
-      tags:
-        - users
-        - sudo
-
-    - name: secure SSH with a sane sshd_config on RedHat
+    - name: secure SSH with a sane sshd_config
       template:
         backup: yes
-        src: templates/redhat_sshd_config.j2
+        src: templates/{{ sshd_config }}
         dest: /etc/ssh/sshd_config
         owner: root
         group: root
         mode: 0600
-      when: ansible_os_family == "RedHat"
 
-      tags:
-        - sshd
-
-    - name: secure SSH with a sane sshd_config on Debian
-      template:
-        backup: yes
-        src: templates/debian_sshd_config.j2
-        dest: /etc/ssh/sshd_config
-        owner: root
-        group: root
-        mode: 0600
-      when: ansible_os_family == "Debian"
-
-      tags:
-        - sshd
-
-    - name: restart sshd on Redhat family
+    - name: restarting sshd
       service:
-        name: sshd
+        name: "{{ sshd_daemon }}"
         state: restarted
         enabled: yes
-      when: ansible_os_family == "Redhat"
-
-      tags: ssh
-
-    - name: restart sshd with new config
-      service:
-        name: ssh
-        state: restarted
-        enabled: yes
-      when: ansible_os_family == "Debian"
-
-      tags:
-        - sshd

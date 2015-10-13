@@ -1,0 +1,13 @@
+---
+# Fedora server setup Playbook
+
+    - name: update all packages on Fedora
+      dnf:
+        name: "*"
+        state: latest
+
+    - name: add the must have apps on Fedora
+      yum:
+        name: "{{ item }}"
+        state: latest
+      with_items: "{{ must_have_apps }}"

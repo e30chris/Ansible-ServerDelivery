@@ -1,0 +1,13 @@
+---
+# Debian server setup Playbook
+
+    - name: update all packages on Ubuntu family
+      apt:
+        upgrade: full
+
+    - name: add the must have apps on Ubuntu
+      apt:
+        name: "{{ item }}"
+        state: latest
+        update_cache: yes
+      with_items: "{{ must_have_apps }}"

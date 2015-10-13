@@ -1,0 +1,4 @@
+---
+# Fedora vars
+sshd_config: fedora_sshd_config.j2
+sshd_daemon: sshd
