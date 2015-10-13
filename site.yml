@@ -6,33 +6,15 @@
   vars_files:
     - group_vars/main.yml
     - group_vars/passes.yml
-    - redhat.yml
-    - debian.yml
+    - group_vars/{{ ansible_os_family }}.yml
 
   tasks:
 
-    - name: update all packages to latest
-      package:
-        name: "*"
-        state: latest
+    - include: RedHat.yml
+      when: ansible_os_family == "RedHat"
 
-    - name: install EPEL for RedHat/CentOS
-      package:
-        name: epel-release
-        state: latest
-      when: ansible_distribution == "RedHat"
-
-    - name: add the must have apps
-      package:
-        name: "{{ item }}"
-        state: latest
-      with_items:
-        - sudo
-        - vim
-        - htop
-        - tmux
-        - unzip
-        - fail2ban
+    - include: Debian.yml
+      when: ansible_os_family == "Debian"
 
     - name: adding users to servers
       user:
@@ -81,7 +63,7 @@
     - name: secure SSH with a sane sshd_config
       template:
         backup: yes
-        src: "{{ sshd_config }}"
+        src: templates/{{ sshd_config }}
         dest: /etc/ssh/sshd_config
         owner: root
         group: root

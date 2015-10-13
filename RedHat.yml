@@ -1,0 +1,25 @@
+---
+# RedHat server setup Playbook
+
+#    - name: clean all packages on RedHat family
+#      command: yum clean all
+
+#    - name: update all packages on RedHat family
+#      command: yum update
+
+    - name: update all packages on RedHat family
+      yum:
+        name: "*"
+        state: latest
+        update_cache: yes
+
+    - name: install EPEL for RedHat/CentOS
+      yum:
+        name: epel-release
+        state: latest
+
+    - name: add the must have apps on Redhat
+      yum:
+        name: "{{ item }}"
+        state: latest
+      with_items: "{{ must_have_apps }}"
