@@ -6,15 +6,18 @@
   vars_files:
     - group_vars/main.yml
     - group_vars/passes.yml
-    - group_vars/{{ ansible_os_family }}.yml
+    - group_vars/{{ ansible_distribution }}.yml
 
   tasks:
 
-    - include: RedHat.yml
-      when: ansible_os_family == "RedHat"
+    - include: CentOS.yml
+      when: ansible_distribution == "Centos"
 
-    - include: Debian.yml
-      when: ansible_os_family == "Debian"
+    - include: Ubuntu.yml
+      when: ansible_distribution == "Ubuntu"
+
+    - include: Fedora.yml
+      when: ansible_distribution == "Fedora"
 
     - name: adding users to servers
       user:

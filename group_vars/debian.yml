@@ -1,4 +1,0 @@
----
-# Debian & Ubuntu vars
-sshd_config: debian_sshd_config.j2
-sshd_daemon: ssh

@@ -1,14 +1,14 @@
 ---
 # Debian server setup Playbook
 
-    - name: update all packages on Debian family
+    - name: update all packages on Ubuntu family
       apt:
         upgrade: full
 
     - name: show broken packages
       command: dpkg --get-selections | grep hold
 
-    - name: add the must have apps on Debian
+    - name: add the must have apps on Ubuntu
       apt:
         name: "{{ item }}"
         state: latest

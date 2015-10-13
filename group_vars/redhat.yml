@@ -1,4 +1,0 @@
----
-# RedHat & CentOS vars
-sshd_config: redhat_sshd_config.j2
-sshd_daemon: sshd

@@ -1,0 +1,4 @@
+---
+# Ubuntu vars
+sshd_config: ubuntu_sshd_config.j2
+sshd_daemon: ssh
