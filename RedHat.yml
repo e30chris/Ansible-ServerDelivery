@@ -1,12 +1,6 @@
 ---
 # RedHat server setup Playbook
 
-#    - name: clean all packages on RedHat family
-#      command: yum clean all
-
-#    - name: update all packages on RedHat family
-#      command: yum update
-
     - name: update all packages on RedHat family
       yum:
         name: "*"

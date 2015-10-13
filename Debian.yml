@@ -3,12 +3,14 @@
 
     - name: update all packages on Debian family
       apt:
-        name: "*"
-        state: latest
-        update_cache: yes
+        upgrade: full
+
+    - name: show broken packages
+      command: dpkg --get-selections | grep hold
 
     - name: add the must have apps on Debian
       apt:
         name: "{{ item }}"
         state: latest
+        update_cache: yes
       with_items: "{{ must_have_apps }}"
