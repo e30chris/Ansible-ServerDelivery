@@ -2,6 +2,8 @@
 # vars file for ServerDelivery
 delivered_users:
   - chrisl
+  - dpr
+  - weev
 
 must_have_apps:
   - sudo

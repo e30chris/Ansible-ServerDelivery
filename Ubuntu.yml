@@ -5,9 +5,6 @@
       apt:
         upgrade: full
 
-    - name: show broken packages
-      command: dpkg --get-selections | grep hold
-
     - name: add the must have apps on Ubuntu
       apt:
         name: "{{ item }}"
