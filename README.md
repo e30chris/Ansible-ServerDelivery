@@ -17,7 +17,7 @@ Take a fresh deployed server from AWS or Digital Ocean and deliver it with every
 Requirements
 ------------
 
-  - Server is Debian or RedHat family
+  - Server is Ubuntu, CentOS or Fedora
   - Server has a public facing IP
   - SSH is enabled
   - Each user to be created has a public ssh key in files/
@@ -27,6 +27,10 @@ Role Variables
 
 users_ssh_key_pass = password for the ssh key created on the delivered server
 delivered_users = users to create on the system that will have sudo
+must_have_apps = list of apps to install
+ssh_config = path to sshd config file
+sshd_daemon = name of ssh daemon (ssh or sshd)
+
 
 
 Dependencies
