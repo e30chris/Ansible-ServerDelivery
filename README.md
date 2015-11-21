@@ -1,4 +1,4 @@
-Role Name
+Ansible-ServerDelivery
 =========
 
 Take a fresh deployed server from AWS or Digital Ocean and deliver it with everything it needs to be a secure, easy to use simple server.  Servers will be deployed via Tugboat for Digital Ocean and AWS will use Web or cli.
