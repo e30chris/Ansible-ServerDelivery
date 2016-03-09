@@ -2,7 +2,8 @@
   # Site.yml to manage the ServerDelivery Playbook.
 
 - hosts: all
-  remote_user: root
+  remote_user: chrisl
+  sudo: yes
   vars_files:
     - group_vars/main.yml
     - group_vars/passes.yml
