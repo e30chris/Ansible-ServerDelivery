@@ -12,3 +12,5 @@ must_have_apps:
   - tmux
   - unzip
   - fail2ban
+  - sysstat
+  - iftop
